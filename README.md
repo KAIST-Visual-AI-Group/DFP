@@ -58,8 +58,8 @@ pip install -r requirements.txt
 You can also use the provided conda environment file:
 
 ```bash
-conda env create -f enviromnet_mingue.yml
-conda activate <env-name>
+conda env create -f environment.yml
+conda activate dfp
 ```
 
 ---
@@ -175,4 +175,4 @@ If you find our work useful, please consider citing:
 
 ## Acknowledgements
 
-This repository builds on the Q-chunking/FQL codebase. We retain the `acfql` baseline for compatibility and comparison.
+This repository builds on the [Q-chunking](https://github.com/ColinQiyangLi/qc)/[FQL](https://github.com/seohongpark/fql) codebase.

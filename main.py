@@ -5,7 +5,7 @@ from log_utils import setup_wandb, get_exp_name, get_flag_dict, CsvLogger
 
 from envs.env_utils import make_env_and_datasets
 from envs.ogbench_utils import make_ogbench_env_and_datasets
-# from envs.robomimic_utils import is_robomimic_env
+from envs.robomimic_utils import is_robomimic_env
 
 from utils.flax_utils import save_agent, restore_agent_with_file
 from utils.datasets import Dataset, ReplayBuffer
@@ -373,9 +373,9 @@ def main(_):
     dataset_paths = []  # Initialize dataset_paths for all cases
 
     # Check if this is a robomimic environment
-    # from envs.robomimic_utils import is_robomimic_env
+    from envs.robomimic_utils import is_robomimic_env
 
-    if False:
+    if is_robomimic_env(FLAGS.env_name):
         # Robomimic environment - use robomimic loader
         print(f"Loading robomimic environment: {FLAGS.env_name}")
         env, eval_env, train_dataset, val_dataset = make_env_and_datasets(FLAGS.env_name)
@@ -436,11 +436,11 @@ def main(_):
                 **{k: v[:new_size] for k, v in ds.items()}
             )
         
-        # if is_robomimic_env(FLAGS.env_name):
-        #     penalty_rewards = ds["rewards"] - 1.0
-        #     ds_dict = {k: v for k, v in ds.items()}
-        #     ds_dict["rewards"] = penalty_rewards
-        #     ds = Dataset.create(**ds_dict)
+        if is_robomimic_env(FLAGS.env_name):
+            penalty_rewards = ds["rewards"] - 1.0
+            ds_dict = {k: v for k, v in ds.items()}
+            ds_dict["rewards"] = penalty_rewards
+            ds = Dataset.create(**ds_dict)
         
         if FLAGS.sparse:
             # Create a new dataset with modified rewards instead of trying to modify the frozen one
@@ -455,9 +455,6 @@ def main(_):
     example_batch = train_dataset.sample(())
     
     agent_class = agents[config['agent_name']]
-
-    # print(f"[DEBUG] =============== print config ====================")
-    # print(f"[DEBUG] config: {config}")
 
     agent = agent_class.create(
         FLAGS.seed,
@@ -608,9 +605,9 @@ def main(_):
         ):
             # Adjust reward for D4RL antmaze.
             int_reward = int_reward - 1.0
-        # elif is_robomimic_env(FLAGS.env_name):
-        #     # Adjust online (0, 1) reward for robomimic
-        #     int_reward = int_reward - 1.0
+        elif is_robomimic_env(FLAGS.env_name):
+            # Adjust online (0, 1) reward for robomimic
+            int_reward = int_reward - 1.0
 
         if FLAGS.sparse:
             assert int_reward <= 0.0

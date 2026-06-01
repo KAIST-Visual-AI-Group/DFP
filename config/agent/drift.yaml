@@ -4,7 +4,7 @@ agent_name: "drift"
 gen_per_label: 8  # Number of generated samples per data point for drift loss
 drift_temps: [0.1]  # Temperature values for drift loss kernel
 alpha: 1.0  # Coefficient for drift loss to match Q loss magnitude
-alpha_pos: 1.0     # online: weight for top-a pos drift loss
+alpha_pos: 0.5     # online: weight for top-a pos drift loss
 alpha_target: 1.0  # online: weight for dataset target drift loss
 actor_type: "best-of-n" # options: distill-ddpg, best-of-n
 

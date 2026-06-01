@@ -1,4 +1,4 @@
-name: qc
+name: dfp
 channels:
   - nvidia
   - conda-forge
