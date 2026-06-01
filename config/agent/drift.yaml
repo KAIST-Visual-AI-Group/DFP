@@ -1,0 +1,39 @@
+agent_name: "drift"
+
+# Drift-specific hyperparameters:
+gen_per_label: 8  # Number of generated samples per data point for drift loss
+drift_temps: [0.1]  # Temperature values for drift loss kernel
+alpha: 1.0  # Coefficient for drift loss to match Q loss magnitude
+alpha_pos: 1.0     # online: weight for top-a pos drift loss
+alpha_target: 1.0  # online: weight for dataset target drift loss
+actor_type: "best-of-n" # options: distill-ddpg, best-of-n
+
+# BoN-specific hyperparameters:
+q_bon: 16
+eval_bon: 16
+actor_num_samples: 16
+
+# Q-learning hyperparameters:
+q_alpha: 0.0
+q_agg: "mean"  # Options: mean, min
+num_qs: 2
+normalize_q_loss: False
+
+# Note: No flow_steps (1-step model)
+# Alpha scales drift loss to ~1.0 to match normalized Q loss magnitude
+
+# Online drift mode params:
+online_drift_mode: "hard"   # "none" / "hard" / "soft" — activated by switch_config_to_online
+online_n_samples: 16        # N: samples to generate, score with Q, and use as gen
+online_pos_samples: 4       # a: top-Q samples used as positive
+online_neg_samples: 0       # b: bottom-Q samples used as negative
+drift_plus_only: false      # If true, drift_loss uses only the positive drifting field
+
+# Online drift ema + neg
+drift_use_neg_only: false
+use_actor_ema: true
+actor_ema_tau: 0.0001
+
+# Action chunking defaults for non-AC agents:
+horizon_length: 5
+action_chunking: true

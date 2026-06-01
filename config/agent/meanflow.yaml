@@ -1,0 +1,49 @@
+agent_name: "meanflow"
+
+# Optimizer overrides (null = use shared agent.lr for all networks):
+actor_lr: null  # If set, applies a separate Adam LR to actor (modules_actor_meanflow*) params.
+
+# Meanflow-specific hyperparameters:
+n_samples_per_action: 1  # Number of (eps, r, t) samples per data action
+ivc_lambda: 1.0  # Weight for IVC (instantaneous velocity constraint)
+alpha: 1.0  # Coefficient for meanflow loss
+alpha_pos: 0.1     # online: weight for top-a pos drift loss (null -> fall back to alpha)
+alpha_target: 1.0  # online: weight for dataset target drift loss (null -> fall back to alpha)
+actor_type: "best-of-n" # options: distill-ddpg, best-of-n
+
+# (t, r) sampler options:
+tr_sampler: "lognorm"  # options: uniform, lognorm
+tr_lognorm_mu: -0.4
+tr_lognorm_sigma: 1.0
+
+# BoN-specific hyperparameters:
+q_bon: 16
+eval_bon: 16
+actor_num_samples: 16
+use_fourier_features: false
+fourier_feature_dim: 64
+
+# Guidance hyperparameters:
+eta_temperature: 0.0  # Guidance temperature (0 = no guidance)
+eta_temperature_online: null  # default to eta_temperature
+
+# Q-learning hyperparameters:
+q_alpha: 0.0
+q_agg: "mean"  # Options: mean, min
+num_qs: 2
+normalize_q_loss: False
+
+# Note: 1-step inference: a = eps - u(eps, r=0, t=1)
+# Note: No guidance weighting - pure meanflow + Q loss
+
+# Online top-K of N params (0 disables the online branch):
+online_top_k: 4        # K: number of top-Q candidates used as extra meanflow targets
+online_n_samples: 16   # N: number of candidates generated and ranked by Q
+
+# Actor EMA (used as the proposal model for top-K selection in online stage):
+use_actor_ema: true        # Auto-set to true by switch_config_to_online
+actor_ema_tau: 0.0001      # Polyak rate; required when use_actor_ema=true
+
+# Action chunking defaults for non-AC agents:
+horizon_length: 5
+action_chunking: true

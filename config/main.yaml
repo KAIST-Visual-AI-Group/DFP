@@ -1,0 +1,84 @@
+defaults:
+  - _self_
+  - agent: acfql
+  - override hydra/job_logging: disabled
+  # - opt: light_log # OPTIONAL
+
+
+run_group: "Default"
+seed: null
+env_name: "antmaze-large-navigate-singletask-task1-v0"
+dataset_dir: "/home/zz1529/ogbench/data" # backward-compatible key
+ogbench_dataset_dir: null
+is_final: false # to flag runs we want to report as final performance
+
+# YAML-based config selection for main.py
+main_config: "config/main.yaml"
+agent_config: "acfql"
+# exp_name_flags: [horizon_length, agent.alpha, agent.q_alpha, agent.q_bon, agent.eval_bon]
+exp_name_flags: []
+
+
+# Action chunking controls (mapped in main.py)
+horizon_length: 5
+action_chunking: true
+sparse: false
+discount: 0.99
+
+wandb:
+  project: flow-policy
+  group: ${eval:'"Final" if ${is_final} else "Default"'}
+  settings:
+    x_disable_stats: true
+  # mode: online # Overridden by 'launcher'
+
+# To save and load checkpoints
+save_dir: exp
+restore_epoch: null
+restore_path: null
+
+# Computation parameters
+dataset_on_gpu: true # if visual => overridden to CPU
+n_steps_fused: 4
+n_eval_envs: 10
+
+# Training steps
+offline_steps: 1000000
+online_steps: 1000000
+buffer_size: 2000000
+balanced_sampling: False
+dataset_proportion: 1.0
+dataset_replace_interval: 1000
+start_training: 5000
+utd_ratio: 1
+
+# Logging and evaluation
+eval_flow_policy: true # if it exists
+log_metrics: true # training metrics + eval info
+log_on_wandb: true
+log_locally: true
+log_interval: 20000
+eval_interval: 100000
+save_interval: 0
+save_last_checkpoint: false
+eval_episodes: ${eval:'100 if ${is_final} else 50'}
+video_episodes: 0
+video_frame_skip: 3
+save_all_online_states: false
+
+# agent => Overridden/complemented by the sub-config "agent"
+agent:
+  lr: 0.0003
+  batch_size: 256
+  actor_hidden_dims: [512,512,512,512]
+  value_hidden_dims: [512,512,512,512]
+  layer_norm: True
+  actor_layer_norm: False
+  discount: 0.99
+  tau: 0.005
+  encoder: null # if None and needed => default to pixel_based.encoder
+
+pixel_based:
+  p_aug: 0.5
+  frame_stack: 3
+  encoder: impala_small

@@ -1,0 +1,10 @@
+# @package _global_
+
+# Follow FQL default logging intervals
+log_metrics: true
+log_on_wandb: true
+log_locally: true
+log_interval: 5000
+eval_interval: 100000
+save_interval: 1000000
+save_last_checkpoint: true

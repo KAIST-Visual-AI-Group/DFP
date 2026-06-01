@@ -1,0 +1,23 @@
+agent_name: "acfql"
+
+q_agg: "mean"
+alpha: 100.0
+num_qs: 2
+flow_steps: 10
+
+q_alpha: 1.0
+normalize_q_loss: False
+
+# action chunking
+horizon_length: 5
+action_chunking: true
+
+actor_type: "distill-ddpg"
+# BoN-specific hyperparameters:
+q_bon: -1
+eval_bon: -1
+actor_num_samples: 32
+
+use_fourier_features: false
+fourier_feature_dim: 64
+weight_decay: 0.0

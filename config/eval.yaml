@@ -1,0 +1,35 @@
+defaults:
+  - _self_
+  - agent: acfql
+  - override hydra/job_logging: disabled
+
+run_group: "Eval"
+seed: 0
+env_name: "cube-double-play-singletask-task2-v0"
+dataset_dir: "/home/zz1529/ogbench/data"
+ogbench_dataset_dir: null
+
+# YAML-based config selection for eval.py
+main_config: "config/eval.yaml"
+agent_config: "acfql"
+# exp_name_flags: [env_name, horizon_length, agent.alpha, agent.q_alpha, agent.q_bon, agent.eval_bon]
+exp_name_flags: []
+
+# Action chunking controls (mapped in eval.py)
+horizon_length: 5
+action_chunking: true
+sparse: false
+discount: 0.99
+
+# Logging and evaluation
+eval_episodes: 100
+video_episodes: 0
+video_frame_skip: 3
+
+# Checkpoint restoration
+save_dir: exp
+restore_epoch: 0
+restore_path: null
+
+agent:
+  encoder: null

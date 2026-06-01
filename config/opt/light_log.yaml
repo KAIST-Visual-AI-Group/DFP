@@ -1,0 +1,10 @@
+# @package _global_
+
+# Only reports the final success rate using wandb
+log_metrics: false
+log_on_wandb: true
+log_locally: false
+log_interval: 0
+eval_interval: 0
+save_interval: 0
+save_last_checkpoint: false

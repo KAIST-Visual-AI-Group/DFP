@@ -1,0 +1,29 @@
+name: qc
+channels:
+  - nvidia
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - cudnn
+  - pip
+  - pip:
+    - absl-py==2.2.2
+    - ml_collections==1.1.0
+    - tqdm==4.67.1
+    - wandb==0.19.9
+    - numpy==2.2.5
+    - flax==0.10.5
+    - optax==0.2.4
+    - distrax==0.1.5
+    - chex==0.1.89
+    - gymnasium==1.1.1
+    - mujoco==3.3.1
+    - dm_control==1.0.28
+    - ogbench==1.1.2
+    - jax[cuda12]
+    - jaxlib==0.6.0
+    - jax-cuda12-plugin==0.6.0
+    - jax-cuda12-pjrt==0.6.0
+    - h5py
+    - robomimic
