@@ -34,7 +34,7 @@ Because the exact soft target is intractable, DFP uses a practical top-K critic-
 This release contains:
 
 - `drift`: Drifting Field Policy.
-- `meanflow`: MVP/MeanFlow comparison backbone.
+- `meanflow`: Mean Velocity Policy comparison backbone.
 - `acfql`: QC/FQL baseline retained from the original action-chunking codebase.
 
 ---
@@ -171,7 +171,7 @@ MUJOCO_GL=egl python main.py \
 
 | Path | Description |
 |------|-------------|
-| `agents/` | DFP, MVP/MeanFlow, and QC/FQL baseline agents |
+| `agents/` | DFP, MVP, and QC/FQL baseline agents |
 | `config/` | Main, evaluation, optimizer, and agent configs |
 | `envs/` | Robomimic, OGBench, and D4RL environment utilities |
 | `utils/` | Datasets, networks, drifting loss, logging, and Flax utilities |
