@@ -16,7 +16,7 @@ KAIST
 <br><br>
 
 <a href="https://driftingpolicy.github.io/">
-  <img src="./assets/teaser.png" alt="DFP teaser figure" width="88%">
+  <img src="./assets/teaser.png" alt="DFP teaser figure" width="60%">
 </a>
 
 </div>
