@@ -53,8 +53,8 @@ def get_exp_name(seed, extra_tags=None):
         exp_name += f'{os.environ["SLURM_ARRAY_JOB_ID"]}.'
     if 'SLURM_ARRAY_TASK_ID' in os.environ:
         exp_name += f'{os.environ["SLURM_ARRAY_TASK_ID"]}.'
-    exp_name += f'/seed={seed:03d}'
-    exp_name += f'/{datetime.now().strftime("%Y%m%d_%H%M%S")}'
+    exp_name += f'seed={seed:03d}'
+    exp_name += f'{datetime.now().strftime("%Y%m%d_%H%M%S")}'
 
     return exp_name
 

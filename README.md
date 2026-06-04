@@ -50,16 +50,16 @@ This release contains:
 ### Installation
 
 ```bash
-conda create -n dfp python=3.10 -y
-conda activate dfp
-pip install -r requirements.txt
-```
-
-You can also use the provided conda environment file:
-
-```bash
 conda env create -f environment.yml
 conda activate dfp
+```
+
+Or install the pip dependencies manually:
+
+```bash
+conda create -n dfp python=3.10 pip -y
+conda activate dfp
+pip install -r requirements.txt
 ```
 
 ---
@@ -74,6 +74,12 @@ Place the low-dimensional Robomimic datasets under the standard Robomimic direct
 ~/.robomimic/lift/mh/low_dim_v15.hdf5
 ~/.robomimic/can/mh/low_dim_v15.hdf5
 ~/.robomimic/square/mh/low_dim_v15.hdf5
+```
+
+If your datasets live elsewhere, set:
+
+```bash
+export ROBOMIMIC_DATASET_DIR=/path/to/robomimic
 ```
 
 The datasets can be downloaded from the Robomimic dataset page:
@@ -93,6 +99,20 @@ Pass the downloaded directory with:
 ```bash
 --ogbench_dataset_dir=/path/to/cube-quadruple-play-100m-v0
 ```
+
+---
+
+## MVP Baseline Note
+
+[MVP](https://arxiv.org/abs/2602.13810) is our main comparison baseline. Since
+no official implementation was available, we implemented the MVP
+baseline ourselves for reproduction. Most hyperparameters follow the MVP paper,
+but for cube-triple experiments we set `ivc_lambda=0` because it gave the
+strongest performance in our runs.
+
+We were not able to fully reproduce the reported paper performance across all
+settings, so the MVP results in our experiments use the best-performing
+configuration we found.
 
 ---
 

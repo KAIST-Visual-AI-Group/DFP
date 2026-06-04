@@ -7,7 +7,7 @@ actor_lr: null  # If set, applies a separate Adam LR to actor (modules_actor_mea
 n_samples_per_action: 1  # Number of (eps, r, t) samples per data action
 ivc_lambda: 1.0  # Weight for IVC (instantaneous velocity constraint)
 alpha: 1.0  # Coefficient for meanflow loss
-alpha_pos: 0.1     # online: weight for top-a pos drift loss (null -> fall back to alpha)
+alpha_pos: 0.5     # online: weight for top-a pos drift loss (null -> fall back to alpha)
 alpha_target: 1.0  # online: weight for dataset target drift loss (null -> fall back to alpha)
 actor_type: "best-of-n" # options: distill-ddpg, best-of-n
 
@@ -23,10 +23,6 @@ actor_num_samples: 16
 use_fourier_features: false
 fourier_feature_dim: 64
 
-# Guidance hyperparameters:
-eta_temperature: 0.0  # Guidance temperature (0 = no guidance)
-eta_temperature_online: null  # default to eta_temperature
-
 # Q-learning hyperparameters:
 q_alpha: 0.0
 q_agg: "mean"  # Options: mean, min
@@ -34,7 +30,7 @@ num_qs: 2
 normalize_q_loss: False
 
 # Note: 1-step inference: a = eps - u(eps, r=0, t=1)
-# Note: No guidance weighting - pure meanflow + Q loss
+# Note: Pure meanflow + Q loss
 
 # Online top-K of N params (0 disables the online branch):
 online_top_k: 4        # K: number of top-Q candidates used as extra meanflow targets

@@ -7,8 +7,8 @@ defaults:
 
 run_group: "Default"
 seed: null
-env_name: "antmaze-large-navigate-singletask-task1-v0"
-dataset_dir: "/home/zz1529/ogbench/data" # backward-compatible key
+env_name: "cube-triple-play-singletask-task2-v0"
+dataset_dir: null # backward-compatible key
 ogbench_dataset_dir: null
 is_final: false # to flag runs we want to report as final performance
 

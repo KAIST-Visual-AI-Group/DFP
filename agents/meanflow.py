@@ -3,7 +3,7 @@ MeanFlow Policy with Q-Learning (1-step)
 
 - Using 1-step meanflow loss (mean velocity + IVC)
 - No distillation loss
-- No guidance weighting (pure meanflow + Q loss)
+- Pure meanflow + Q loss
 - Q-learning for value estimation
 """
 
@@ -16,7 +16,6 @@ import jax
 import jax.numpy as jnp
 import ml_collections
 import optax
-from jax.scipy.special import logsumexp
 
 from utils.encoders import encoder_modules
 from utils.flax_utils import ModuleDict, TrainState, nonpytree_field
@@ -145,7 +144,7 @@ class MeanflowAgent(flax.struct.PyTreeNode):
         return mf_loss, ivc_loss
 
     def actor_loss(self, batch, grad_params, rng):
-        """Compute actor loss with meanflow and guidance."""
+        """Compute actor loss with meanflow and Q loss."""
         if self.config["action_chunking"]:
             batch_actions = jnp.reshape(batch["actions"], (batch["actions"].shape[0], -1))
         else:
@@ -159,7 +158,7 @@ class MeanflowAgent(flax.struct.PyTreeNode):
 
         rng, mf_rng, q_rng = jax.random.split(rng, 3)
 
-        # Get actor actions for Q loss and guidance
+        # Get actor actions for Q loss.
         actor_noises = jax.random.normal(q_rng, (batch_size, action_dim))
         r0 = jnp.zeros((batch_size, 1), dtype=actor_noises.dtype)
         t1 = jnp.ones((batch_size, 1), dtype=actor_noises.dtype)
@@ -198,7 +197,7 @@ class MeanflowAgent(flax.struct.PyTreeNode):
             q_loss = 0.0
             lam = 1.0
 
-        # Meanflow loss with guidance
+        # Meanflow loss.
         n_samples = self.config.get("n_samples_per_action", 1)
         obs_repeated = jnp.repeat(batch["observations"], n_samples, axis=0)
         act_repeated = jnp.repeat(batch_actions, n_samples, axis=0)
@@ -254,39 +253,7 @@ class MeanflowAgent(flax.struct.PyTreeNode):
         combined_losses = mf_losses_per_sample + ivc_lambda * ivc_losses_per_sample
         meanflow_loss_per_sample = combined_losses.mean(axis=1)  # [B]
 
-        # Apply guidance weighting if enabled
-        if self.config["eta_temperature"] == 0:
-            actor_meanflow_loss = meanflow_loss_per_sample.mean()
-            g_info = dict()
-        else:
-            q_ref = self.network.select("target_critic")(
-                batch["observations"], actions=jax.lax.stop_gradient(actor_acts)
-            )
-            q_ref = getattr(jnp, self.config["q_agg"])(q_ref, axis=0)
-            q_data = self.network.select("target_critic")(
-                batch["observations"], actions=batch_actions
-            )
-            q_data = getattr(jnp, self.config["q_agg"])(q_data, axis=0)
-            scale = lam / self.config["eta_temperature"]
-
-            assert self.config["guidance_fn"] in ["softmax", "advantage"]
-            scl_q_data = scale * q_data
-            scl_q_ref = scale * q_ref
-            if self.config["guidance_fn"] == "softmax":
-                log_denominator = logsumexp(
-                    jnp.stack([scl_q_data, scl_q_ref], axis=-1), axis=-1
-                )
-                guidance = jnp.exp(scl_q_data - log_denominator)
-            else:
-                guidance = jnp.exp(scl_q_data - scl_q_ref)
-            actor_meanflow_loss = jnp.mean(guidance * meanflow_loss_per_sample)
-            g_info = {
-                "q_data": q_data.mean(),
-                "q_ref": q_ref.mean(),
-                "scaled_q_data": scl_q_data.mean(),
-                "scaled_q_ref": scl_q_ref.mean(),
-                "guidance": guidance.mean(),
-            }
+        actor_meanflow_loss = meanflow_loss_per_sample.mean()
 
         # Apply alpha to match Q loss magnitude
         alpha = self.config.get("alpha", 1.0)
@@ -301,7 +268,6 @@ class MeanflowAgent(flax.struct.PyTreeNode):
             mf_loss=mf_loss_metric,
             ivc_loss=ivc_loss_metric,
             q_loss=q_loss,
-            **g_info,
         )
         return actor_loss, info
 
@@ -515,7 +481,6 @@ class MeanflowAgent(flax.struct.PyTreeNode):
     def switch_config_to_online(self):
         new_config = self.config.copy(
             {
-                "eta_temperature": self.config["eta_temperature_online"],
                 "use_actor_ema": True,
             }
         )
@@ -737,8 +702,6 @@ class MeanflowAgent(flax.struct.PyTreeNode):
             config["actor_type"] = "distill-ddpg"
         if config.get("actor_num_samples") is None:
             config["actor_num_samples"] = 32
-        if config.get("eta_temperature_online") is None:
-            config["eta_temperature_online"] = config["eta_temperature"]
         return cls(rng, network=network, config=flax.core.FrozenDict(**config))
 
 
@@ -771,9 +734,6 @@ def get_config():
             actor_num_samples=32,
             q_bon=-1,
             eval_bon=-1,
-            eta_temperature=0.0,
-            eta_temperature_online=ml_collections.config_dict.placeholder(float),
-            guidance_fn="softmax",
             n_samples_per_action=8,
             ivc_lambda=0.0,
             use_fourier_features=False,
