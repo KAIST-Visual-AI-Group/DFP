@@ -22,14 +22,12 @@ KAIST
 </div>
 
 <blockquote align="center">
-DFP directly updates a one-step generative policy in action space through a drifting-field objective, avoiding ODE trajectory-level credit assignment during offline-to-online RL fine-tuning.
+Drifting Field Policy (DFP) is a novel one-step generative policy that avoids the trajectory-level credit assignment of diffusion policies in RL fine-tuning.
 </blockquote>
 
 ## Overview
 
-Drifting Field Policy (DFP) is a non-ODE one-step generative policy for offline-to-online reinforcement learning. DFP represents the policy as a single-pass pushforward map from Gaussian noise to actions, and frames policy improvement as a Wasserstein-2 gradient flow toward the soft policy improvement target.
-
-Because the exact soft target is intractable, DFP uses a practical top-K critic-selected action surrogate: it samples candidate actions from the current policy, selects high-value actions with the critic, and trains the drifting field toward those actions. This keeps inference one-step while directly applying online reward signals at the action level.
+Drifting Field Policy (DFP) is a one-step generative policy framework for reinforcement learning. Instead of relying on iterative diffusion or ODE-based sampling, DFP represents the policy as a direct pushforward map from noise to actions. Policy improvement is formulated as a Wasserstein gradient flow that moves the action distribution toward high-value regions under a critic. This enables fast, multimodal action generation while keeping the training objective directly aligned with reward-guided policy improvement.
 
 This release contains:
 
